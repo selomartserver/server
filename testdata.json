@@ -1,0 +1,23 @@
+{
+    "orgname":"test",
+    "username":"test",
+    "email":"test",
+    "password":true,
+
+    "seller":{"shopname":"test","shopowner":"","contactnumber":"",
+        "website":"",
+        "shopinfo":"","imgbanner":"test","registration_date":"",
+    
+    
+    
+        
+        "outlets":[{"address":"test","location":123,"workinghrs":"10AM-12PM"
+            ,"city":"test","zip":123,"phone":"10AM-12PM",
+            "ratingby" : [],
+            "rating" : 4.5
+            }]
+    },
+    
+
+    "added_datetime":"test"
+}
