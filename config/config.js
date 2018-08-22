@@ -1,5 +1,5 @@
 
-const dbconnectUrlProd="mongodb://52.66.114.206:27017/localshop";
+const dbconnectUrlProd="mongodb://dbuser:selomart123@52.66.114.206:27017/selomart";
 const dbconnectUrlDevelopement="mongodb://localhost/localshop";
 
 module.exports={
