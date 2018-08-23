@@ -1,7 +1,8 @@
 let product = require("../models/product.model");
 let fs = require("fs");
+let mongoose = require('mongoose');
 exports.saveProduct = function (req, res) {
-    let success = false, productadded = 0, productupdated = 0, message = `Something went wrong ,while sabing product..`;
+    let success = false, productadded = 0, productupdated = 0, message = `Product saved successfully.`;
     try {
         if (req.body.productimage) {
             var getUniqid = require('uniqid');
@@ -28,6 +29,7 @@ exports.saveProduct = function (req, res) {
         }
     } catch (e) {
         console.log("In catch");
+        message = "Some Problem while performing action.Try again.";
         res.json({ success: success, productupdated: productupdated, productadded: productadded, message: message });
     }
 }
@@ -77,18 +79,21 @@ function _saveProduct(req, res, pathToDB = "../assets/img/no-product.png") {
         otherspecification: req.body.otherspecifications,
         specifications: req.body.specifications
     }
-    if(req.body.prodid) delete entry.imgurl;
+    if (req.body.prodid) delete entry.imgurl;
     let productObj = new product(entry);
     // productObj.save(function (err, result) {
-        product.update({_id: req.body.prodid}, entry, {upsert: true}, function (err, result) {
-
+    var query = { _id: req.body.prodid };
+    if (!query._id) { //if object id not there then add new id to record
+        query._id = new mongoose.mongo.ObjectID();
+    }
+    product.findOneAndUpdate(query, entry, { upsert: true,new: true }, function (err, result) {
         if (err) {
             console.log("err" + err);
-            message = "Some Problem while registering user.Try again.";
+            message = "Some Problem while performing action.Try again.";
         } else {
             if (result) {
                 success = true;
-                if(result['nModified']) {
+                if (result['nModified']) {
                     productupdated = 1;
                     message = "Product updated successfully.";
                 } else {
@@ -98,11 +103,11 @@ function _saveProduct(req, res, pathToDB = "../assets/img/no-product.png") {
             } else {
                 success = true;
                 productadded = 0;
-                message = "Some Problem while registering user.Try again.";
+                message = "Some Problem while performing action.Try again.";
             }
         }
         res.json({ success: success, productupdated: productupdated, productadded: productadded, message: message });
- });
+    });
 
 }
 
