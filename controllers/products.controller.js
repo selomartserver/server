@@ -1,43 +1,44 @@
 let product = require("../models/product.model");
 exports.getProducts = function (req, res) {
-    let productId = req.query.productid.trim();
-    var pageNo = parseInt(req.query.pageNumber) || 1;
-    var size = parseInt(req.query.pageSize) || 16;
-    console.log("Body in get produtcs =" + JSON.stringify(req.query));
-    // var pageNo = parseInt(req.query.pageNo)
-    // var size = parseInt(req.query.size)
+    let productId = req.query.shopId.trim();
+    let pageNo = parseInt(req.query.pageNumber) || 1;
+    let size = parseInt(req.query.pageSize) || 16;
     if (pageNo < 0 || pageNo === 0) {
         response = { "error": true, "message": "invalid page number, should start with 1" };
         return res.json(response)
     }
-    var query;
+    let query;
     if (productId === "-") {
         query = {}
-        query.skip = size * (pageNo - 1)
-        query.limit = size
     } else {
-        query = { "_id": productId }
+        query = { "seller.id": productId }
     }
-
     product.count(function (err, count) {
-        // Assuming no errors, 'count' should have your answer
-        product.find({}, {}, query, function (err, result) {
-            console.log('into mongoose findone =' + result);
-            let success = false, message = `Something went wrong ,while registering the user. Please try again.`;
-            if (err) {
-                console.log("err" + err);
-            } else {
-                success = true;
-            }
-            //  console.log("result =" + result)
+        if (err) {
             res.json({
-                success: success,
-                productsList: result,
-                totalItems: count,
-                message: message,
+                success: false,
+                message: `Something went wrong ,while fetching products.Please try again.`,
             });
-
-        });
+        }
+        product.
+            find(query).
+            limit(size).
+            skip(size * (pageNo - 1)).
+            //   select('name occupation').
+            exec(function (err, result) {
+                let success = false, message = "Products fetch successfully.";
+                if (err) {
+                    message = `Something went wrong ,while fetching products.Please try again.`;
+                } else {
+                    success = true;
+                }
+                res.json({
+                    success: success,
+                    productsList: result,
+                    totalItems: count,
+                    message: message,
+                });
+  });
     });
 }
 
@@ -59,14 +60,14 @@ exports.getFilteredProducts = function (req, res) {
     } else if (req.body.category && !req.body.subcategory && !req.body.selectedFilters) {///selecting category
         filter.push({
             $and: [{ 'category': req.body.category }]
-        });      
+        });
     } else if (req.body.subcategory && !req.body.selectedFilters) {///selecting subcategory
         filter.push({
             $and: [
                 { 'category': req.body.category },
                 { 'subcategory': req.body.subcategory }
             ]
-        }); 
+        });
     }
     var query = { $and: filter };
     product.count(function (err, count) {
@@ -152,7 +153,7 @@ exports.getProductDetails = function (req, res) {
                 console.log("err" + err);
             } else {
                 success = true;
-                 message = `Data fetched successfully.`
+                message = `Data fetched successfully.`
             }
             //  console.log("result =" + result)
             res.json({
@@ -168,8 +169,8 @@ let findIdInLikes = function (likeArray, userId) {
     let search = function (element) {
         return element === userId;
     };
-    let userFound=likeArray.some(search);
-    console.log("userFound =",userFound);
+    let userFound = likeArray.some(search);
+    console.log("userFound =", userFound);
     return userFound;
 }
 exports.likeProduct = function (req, res) {
@@ -177,49 +178,42 @@ exports.likeProduct = function (req, res) {
     query = { "_id": productId }
 
     product.findOne(query, function (err, result) {
-        let success = false,userAlreadyLiked=false, message = `Something went wrong ,while registering the user. Please try again.`;
+        let success = false, userAlreadyLiked = false, message = `Something went wrong ,while registering the user. Please try again.`;
         if (err) {
             console.log("err" + err);
-               res.json({
-            success: success,
-            message: message,
-        });
+            res.json({
+                success: success,
+                message: message,
+            });
         } else {
-            userAlreadyLiked=findIdInLikes(result.likes,productId);
-           if(userAlreadyLiked){
-            success = true;
-            message = `You have already liked this product`;
-            res.json({ success: success,userAlreadyLiked:userAlreadyLiked, message: message });
-           }else {
-            product.update(query,
-                { $push: { "likes": productId } }, function (err, result) {
-                    let success = false, rowsInserted = false, message = "You liked this product sucessfully.";
-                    if (err) {
-                        console.log("err" + err);
-                        success = true;
-                        message = "Some error occured, Please try again.";
-                    } else {
-                        if (result) {
+            userAlreadyLiked = findIdInLikes(result.likes, productId);
+            if (userAlreadyLiked) {
+                success = true;
+                message = `You have already liked this product`;
+                res.json({ success: success, userAlreadyLiked: userAlreadyLiked, message: message });
+            } else {
+                product.update(query,
+                    { $push: { "likes": productId } }, function (err, result) {
+                        let success = false, rowsInserted = false, message = "You liked this product sucessfully.";
+                        if (err) {
+                            console.log("err" + err);
                             success = true;
-                          
-                        } else { //
-                            message = `Product not found.couldn't like.`;
-                            success = true;
+                            message = "Some error occured, Please try again.";
+                        } else {
+                            if (result) {
+                                success = true;
+ } else { //
+                                message = `Product not found.couldn't like.`;
+                                success = true;
+                            }
                         }
-        
-                    }
-                    res.json({ success: success,userAlreadyLiked:userAlreadyLiked, message: message });
-                });
+                        res.json({ success: success, userAlreadyLiked: userAlreadyLiked, message: message });
+                    });
 
-           }
+            }
         }
 
     });
-
-
-
-   
-
 }
 
 
