@@ -61,6 +61,56 @@ exports.saveSellerDetails = function (req, res) {
 
 }
 
+let findIdInLikes = function (likeArray, userId) {
+    let search = function (element) {
+        return element === userId;
+    };
+    let userFound = likeArray.some(search);
+    console.log("userFound =", userFound);
+    return userFound;
+}
+exports.likeSeller = function (req, res) {
+    let productId = req.body.userId.trim();
+    query = { "_id": productId }
+
+    user.findOne(query, function (err, result) {
+        let success = false, userAlreadyLiked = false, message = `Something went wrong. Please try again.`;
+        if (err) {
+            console.log("err" + err);
+            res.json({
+                success: success,
+                message: message,
+            });
+        } else {
+            userAlreadyLiked = findIdInLikes(result.seller.likes, productId);
+            if (userAlreadyLiked) {
+                success = true;
+                message = `You have already liked this seller.`;
+                res.json({ success: success, userAlreadyLiked: userAlreadyLiked, message: message });
+            } else {
+                user.update(query,
+                    { $push: { "seller.likes": productId } }, function (err, result) {
+                        let success = false, rowsInserted = false, message = "You liked this seller sucessfully.";
+                        if (err) {
+                            console.log("err" + err);
+                            success = true;
+                            message = "Some error occured, Please try again.";
+                        } else {
+                            if (result) {
+                                success = true;
+ } else { //
+                                message = `seller not found.couldn't like.`;
+                                success = true;
+                            }
+                        }
+                        res.json({ success: success, userAlreadyLiked: userAlreadyLiked, message: message });
+                    });
+
+            }
+        }
+
+    });
+}
 function _saveSellerDetails(req, res, pathToDB = "../assets/img/no-product.png") {
     let success = false, productadded = 0, productupdated = 0, message = `Product saved successfully.`;
     var query = {

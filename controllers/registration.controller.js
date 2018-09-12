@@ -33,6 +33,7 @@ exports.registerUser = function (req, res) {
                             shopname: req.body.shopname,
                             shopowner: req.body.shopownername,
                             imgbanner:"",
+                            likes:[],
                             website:req.body.website,
                             shopinfo: `Thanks for visiting our page give use more 
                             opportunities to serve you better.`,
