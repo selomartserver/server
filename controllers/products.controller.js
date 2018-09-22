@@ -41,7 +41,6 @@ exports.getProducts = function (req, res) {
   });
     });
 }
-
 exports.getFilteredProducts = function (req, res) {
     var filter = [];
     if (req.body.selectedFilters) {
@@ -138,9 +137,6 @@ exports.getFilteredProducts = function (req, res) {
 
 
 }
-
-
-
 exports.getProductDetails = function (req, res) {
     let productId = req.query.productid.trim();
     query = { "_id": productId }
@@ -213,6 +209,41 @@ exports.likeProduct = function (req, res) {
             }
         }
 
+    });
+}
+exports.similarProducts = function(req, res) {
+    var filter = [];
+    if (req.body.category && req.body.subcategory) {///selecting subcategory
+        filter.push({
+            $and: [
+                { 'category': req.body.category },
+                { 'subcategory': req.body.subcategory }
+            ]
+        });
+    }
+    var query = { $and: filter };
+    product.count(function (err, count) {
+        if (err) {
+            res.json({
+                success: false,
+                message: `Something went wrong while fetching products. Please try again.`,
+            });
+        }
+        product.find(query).limit(10).
+        exec(function (err, result) {
+            let success = false, message = "Products fetch successfully.";
+            if (err) {
+                message = `Something went wrong while fetching products. Please try again.`;
+            } else {
+                success = true;
+            }
+            res.json({
+                success: success,
+                productsList: result,
+                totalItems: count,
+                message: message,
+            });
+        });
     });
 }
 
