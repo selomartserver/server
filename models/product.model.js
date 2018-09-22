@@ -21,7 +21,7 @@ let outletSchema = new mongoose.Schema({
   homedelibrangeeryrange: {type:String ,default :"0"},
   homedeliverycharge: {type:String ,default :"0"}
 });
-let albumnSchema = new mongoose.Schema( {data: Buffer, contentType: String })
+// let albumnSchema = new mongoose.Schema( {data: Buffer, contentType: String })
 let productSchema = new mongoose.Schema({
   name: String,
   brandname: String,

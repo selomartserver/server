@@ -47,4 +47,7 @@ router.post('/add-new-outlet', function (req, res) {
 router.get('/get-categories-data', function (req, res) {
     return categoryCtrl.getCategories(req, res)
 });
+router.post('/like-seller', function (req, res) {
+    return sellerCtrl.likeSeller(req, res)
+});
 module.exports = router;//export the router

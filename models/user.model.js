@@ -23,7 +23,8 @@ var sellerSchema = new mongoose.Schema({
   shopinfo : String,
   imgbanner : String,
   registration_date :Date ,
-  outlets:[outletSchema]
+  outlets:[outletSchema],
+  likes: [String]
 });
 
 var userSchema = new mongoose.Schema({
