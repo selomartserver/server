@@ -38,6 +38,9 @@ router.get('/get-prod-details', function (req, res) {
 router.post('/get-filtered-products', function (req, res) {
     return productsCtrl.getFilteredProducts(req, res)
 });
+router.post('/get-similar-products', function (req, res) {
+    return productsCtrl.similarProducts(req, res)
+});
 router.post('/add-new-outlet', function (req, res) {
     return outletCtrl.saveOutlet(req, res)
 });
