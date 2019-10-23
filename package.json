@@ -17,7 +17,7 @@
     "https": "^1.0.0",
     "jade": "~1.11.0",
     "mongoose": "^5.1.2",
-    "morgan": "~1.7.0",
+    "morgan": "~1.9.1",
     "mysql": "^2.11.1",
     "nodemailer": "^4.6.7",
     "serve-favicon": "~2.3.0",
